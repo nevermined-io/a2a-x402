@@ -166,7 +166,9 @@ This enables product teams to:
 - mix credit plans, PAYG, subscriptions, or hybrid models
 - guarantee safe and predictable spending patterns
 
-## For engineering teams, the facilitator becomes the single integration point for all settlement behavior.
+For engineering teams, the facilitator becomes the single integration point for all settlement behavior.
+
+---
 
 # Smart Account Policies and x402 Permissions
 
@@ -186,7 +188,9 @@ For users, this means strong protection:
 
 For businesses, this means enforceable monetization with predictable guardrails.
 
-## x402 ensures these policies are not optional—they are cryptographically enforced.
+x402 ensures these policies are not optional—they are cryptographically enforced.
+
+---
 
 # Why This Pattern Scales
 

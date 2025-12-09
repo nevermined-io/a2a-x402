@@ -255,6 +255,59 @@ It unlocks a new category: **agentic commerce**.
 
 ---
 
+# Future Directions: Connecting This Work With ERC-8004
+
+The emerging [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) standard proposes a trustless extension of Google’s A2A protocol for on-chain agents. The specification focuses on agent identity, verifiable interactions, and secure message exchange.
+
+A key design choice is that ERC-8004 is intentionally scoped as a **communication and capability layer**.  
+The standard does [**not** define billing, credit accounting, metering, or payment settlement](https://ethereum-magicians.org/t/erc-8004-trustless-agents/25098/16). Contributors in the Ethereum Magicians discussion explicitly position those concerns as **higher-level protocols** to be built on top of ERC-8004.
+
+This creates a natural point of integration with the approach demonstrated in our x402 + A2A/AP2 flow. While ERC-8004 defines **who** the agent is and **how** it communicates, the Nevermined implementation defines **what the agent is allowed to spend** and **how that spend is enforced on-chain**.
+
+Together, they form a complementary stack:
+
+### 1. Trustless agent communication and capabilities (ERC-8004)
+
+- Cryptographic agent identity
+- Signed messages and verifiable instructions
+- Capability registration and discovery
+
+### 2. Trustless, scoped payment permissions (x402)
+
+- Explicit spend limits
+- Allowed merchant/agent relationships
+- Plan/SKU binding
+- Pricing scheme (credits, PAYG)
+- Network-level constraints
+
+### 3. Standardized payment semantics (AP2)
+
+- Predictable request/response message shapes
+- Plan + product identifiers
+- Pricing metadata
+
+### 4. On-chain enforcement and settlement (Nevermined facilitator)
+
+- Policy verification
+- Spend simulation
+- Credit burning / PAYG deduction
+- Canonical receipts for agents and users
+
+### What This Enables
+
+By combining ERC-8004 with x402/AP2, we unlock a trustless economic layer for agents:
+
+- Autonomous agents that can safely pay each other
+- Agent marketplaces with verifiable settlement
+- Metered compute and data APIs
+- Multi-agent workflows with delegated budgets
+- Composable monetization for agent ecosystems
+- Enterprise agents with enforceable spending controls
+
+We see this as a natural extension of ERC-8004’s goals and an opportunity for deeper collaboration with the Ethereum community around **trustless agent commerce**—a foundational capability for the next generation of AI-native applications.
+
+---
+
 # References
 
 - [payments-py SDK](https://github.com/nevermined-io/payments-py)
@@ -262,3 +315,5 @@ It unlocks a new category: **agentic commerce**.
 - [x402 facilitator concept](https://x402.gitbook.io/x402/core-concepts/facilitator)
 - [Nevermined x402 integration notes](https://github.com/nevermined-io/contracts/blob/main/docs/x402/NVM-x402_integration.md)
 - [Nevermined + x402 positioning](https://www.linkedin.com/pulse/nevermined-x402-bridging-next-generation-payments-aitor-argomaniz-6ea1f/?trackingId=0kivr7zEZeiNP7jP7oAUmA%3D%3D)
+- [ERC-8004: Trustless Agents](https://eips.ethereum.org/EIPS/eip-8004)
+- [Ethereum Magicians ERC-8004: Trustless Agents](https://ethereum-magicians.org/t/erc-8004-trustless-agents/25098/9)

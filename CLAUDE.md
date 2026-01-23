@@ -154,8 +154,9 @@ When building agents with x402 payments:
 
 4. **All payments are on-chain**: The demo uses real blockchain transactions via Nevermined
 
-## Branch Strategy
+## Repository and Branch Strategy
+
+Make all the changes in this repository: https://github.com/nevermined-io/a2a-x402
 
 - **Main branch**: `main`
-- **Feature branch**: `feat/a2a-nvm` (this is the main branch for PRs in this project)
 - Always sync feature branches with `main` before creating PRs

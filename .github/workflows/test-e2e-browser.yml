@@ -83,8 +83,6 @@ jobs:
         env:
           # Ensure tests use .env.test
           PYTEST_CURRENT_TEST: "true"
-          # Playwright-specific settings
-          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

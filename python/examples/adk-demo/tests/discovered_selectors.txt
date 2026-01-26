@@ -1,0 +1,38 @@
+UI Selectors Discovery Results
+============================================================
+
+URL: http://localhost:8000/dev-ui/?app=client_agent
+
+Found Selectors:
+------------------------------------------------------------
+Textarea field: textarea (1 elements)
+Button elements: button (5 elements)
+Elements with IDs: [id] (29 elements)
+message_input: textarea
+send_button: button
+message_container: [class*='chat']
+
+
+Page Text Preview:
+------------------------------------------------------------
+Agent Development Kit
+left_panel_close
+client_agent
+Trace
+Events
+State
+Artifacts
+Sessions
+Eval
+Invocations
+SESSION ID
+571c7111-4852-4734-92e1-c829d428513e
+Token Streaming
+add
+New Session
+delete
+download
+attach_file
+more_vert
+mic
+videocam

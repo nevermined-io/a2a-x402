@@ -53,11 +53,18 @@ class AgentProcessManager:
         # Build command
         cmd = ["uv", "run", "server", "--host", host, "--port", str(port)]
 
+        # Get test environment
+        test_env = self._get_test_env()
+        
+        # Debug: Check if OPENAI_API_KEY is set
+        openai_key_set = "OPENAI_API_KEY" in test_env and test_env["OPENAI_API_KEY"]
+        print(f"DEBUG: OPENAI_API_KEY is {'set' if openai_key_set else 'NOT SET'} in test environment")
+        
         # Start process
         self.merchant_process = subprocess.Popen(
             cmd,
             cwd=str(self.base_dir),
-            env=self._get_test_env(),
+            env=test_env,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

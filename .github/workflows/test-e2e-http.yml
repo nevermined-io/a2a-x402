@@ -72,6 +72,8 @@ jobs:
           echo "Created .env file with $(wc -l < .env) lines"
           ls -la .env
           echo "OPENAI_API_KEY is set in .env: $(grep -c OPENAI_API_KEY .env || echo 0)"
+          echo "Contents of .env file (secrets will be masked):"
+          cat .env
 
       - name: Run HTTP E2E Tests
         run: |

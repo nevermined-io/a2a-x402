@@ -63,15 +63,6 @@ jobs:
 
       - name: Run HTTP E2E Tests
         run: |
-          export NVM_API_KEY_SERVER='${{ secrets.NVM_API_KEY_SERVER }}'
-          export NVM_API_KEY_CLIENT='${{ secrets.NVM_API_KEY_CLIENT }}'
-          export NVM_ENVIRONMENT='staging_sandbox'
-          export NVM_CREDITS_PLAN_ID='108049205517037458937731288202562272535839301659429499119214601955897885058399'
-          export NVM_PAYASYOUGO_PLAN_ID='62394875242609859677277111792165973450905709107028029787650786307704351020504'
-          export NVM_AGENT_ID='2494368510178916230703135426153690490133277298381571617383167590258071002716'
-          export LLM_PROVIDER='openai'
-          export LLM_MODEL='gpt-4o'
-          export OPENAI_API_KEY='${{ secrets.OPENAI_API_KEY }}'
           uv run pytest tests/test_e2e_http.py -v --tb=short --junit-xml=test-results-http.xml
 
       - name: Upload test results

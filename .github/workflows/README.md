@@ -56,44 +56,69 @@ Automated testing workflows for the a2a-x402 project.
 - Automatically comments on PRs with screenshot links
 - Uploads screenshots for debugging failures
 
-## Required Secrets
+## Required Configuration
 
-Configure these secrets in your GitHub repository settings:
+Configure these in your GitHub repository settings.
 
-### Nevermined Authentication
+### Repository Secrets
+
+Sensitive credentials that must be kept private:
+
 - `NVM_API_KEY_SERVER` - Merchant/server API key (format: `sandbox:jwt-token`)
 - `NVM_API_KEY_CLIENT` - Subscriber/client API key (format: `sandbox:jwt-token`)
-- `NVM_ENVIRONMENT` - Environment (default: `sandbox`)
-
-### Agent Configuration
-- `NVM_CREDITS_PLAN_ID` - Credits-based plan ID
-- `NVM_PAYASYOUGO_PLAN_ID` - Pay-as-you-go plan ID (optional)
-- `NVM_AGENT_ID` - Agent ID for x402 payments
-
-### LLM Provider
 - `GOOGLE_API_KEY` - Google AI API key for Gemini
 
 **Note**: Use test/sandbox credentials, not production keys!
 
-## Setting Up Secrets
+### Repository Variables
+
+Non-sensitive configuration values (can be public):
+
+- `NVM_ENVIRONMENT` - Environment name (e.g., `sandbox`, `staging`, `production`)
+- `NVM_CREDITS_PLAN_ID` - Credits-based payment plan ID
+- `NVM_PAYASYOUGO_PLAN_ID` - Pay-as-you-go payment plan ID (optional)
+- `NVM_AGENT_ID` - Agent ID for x402 payments
+
+**Why Variables Instead of Secrets?**
+- Variables are visible in workflow logs (useful for debugging)
+- These IDs are not credentials - they identify public resources
+- Plan IDs and Agent IDs can be safely shared in logs
+- Separating secrets from config improves security hygiene
+
+**Security Note**: Never put API keys, JWT tokens, or passwords in variables - only in secrets!
+
+## Setting Up Configuration
 
 ### Via GitHub UI
 
-1. Go to repository **Settings** → **Secrets and variables** → **Actions**
-2. Click **New repository secret**
-3. Add each secret with name and value
-4. Click **Add secret**
+**Secrets** (Settings → Secrets and variables → Actions → Secrets tab):
+1. Click **New repository secret**
+2. Add each secret:
+   - `NVM_API_KEY_SERVER` = `sandbox:your-server-jwt`
+   - `NVM_API_KEY_CLIENT` = `sandbox:your-client-jwt`
+   - `GOOGLE_API_KEY` = `your-google-api-key`
+
+**Variables** (Settings → Secrets and variables → Actions → Variables tab):
+1. Click **New repository variable**
+2. Add each variable:
+   - `NVM_ENVIRONMENT` = `sandbox`
+   - `NVM_CREDITS_PLAN_ID` = `your-credits-plan-id`
+   - `NVM_PAYASYOUGO_PLAN_ID` = `your-payg-plan-id`
+   - `NVM_AGENT_ID` = `your-agent-id`
 
 ### Via GitHub CLI
 
 ```bash
-# Set secrets using gh CLI
+# Set secrets (sensitive credentials)
 gh secret set NVM_API_KEY_SERVER -b "sandbox:your-server-jwt"
 gh secret set NVM_API_KEY_CLIENT -b "sandbox:your-client-jwt"
-gh secret set NVM_ENVIRONMENT -b "sandbox"
-gh secret set NVM_CREDITS_PLAN_ID -b "your-plan-id"
-gh secret set NVM_AGENT_ID -b "your-agent-id"
 gh secret set GOOGLE_API_KEY -b "your-google-api-key"
+
+# Set variables (non-sensitive configuration)
+gh variable set NVM_ENVIRONMENT -b "sandbox"
+gh variable set NVM_CREDITS_PLAN_ID -b "your-credits-plan-id"
+gh variable set NVM_PAYASYOUGO_PLAN_ID -b "your-payg-plan-id"
+gh variable set NVM_AGENT_ID -b "your-agent-id"
 ```
 
 ## Running Workflows Manually
@@ -185,9 +210,14 @@ This speeds up subsequent runs by ~2-3 minutes.
 
 ## Troubleshooting
 
-### Tests Fail with "Secrets not found"
+### Tests Fail with Missing Configuration
 
-**Solution**: Ensure all required secrets are configured in repository settings.
+**Error**: Variables or secrets not found
+
+**Solution**: Ensure all required secrets AND variables are configured:
+- Go to **Settings** → **Secrets and variables** → **Actions**
+- Check **Secrets** tab for API keys
+- Check **Variables** tab for environment/plan/agent IDs
 
 ### Browser tests fail with Playwright errors
 

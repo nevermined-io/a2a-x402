@@ -53,19 +53,19 @@ jobs:
 
       - name: Set up test environment
         run: |
-          # Create .env.test from secrets
+          # Create .env.test from secrets and variables
           cat > tests/.env.test << EOF
-          # Nevermined Authentication
+          # Nevermined Authentication (secrets)
           NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}
           NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}
-          NVM_ENVIRONMENT=${{ secrets.NVM_ENVIRONMENT || 'sandbox' }}
 
-          # Agent Configuration
-          NVM_CREDITS_PLAN_ID=${{ secrets.NVM_CREDITS_PLAN_ID }}
-          NVM_PAYASYOUGO_PLAN_ID=${{ secrets.NVM_PAYASYOUGO_PLAN_ID }}
-          NVM_AGENT_ID=${{ secrets.NVM_AGENT_ID }}
+          # Nevermined Configuration (variables)
+          NVM_ENVIRONMENT=${{ vars.NVM_ENVIRONMENT || 'sandbox' }}
+          NVM_CREDITS_PLAN_ID=${{ vars.NVM_CREDITS_PLAN_ID }}
+          NVM_PAYASYOUGO_PLAN_ID=${{ vars.NVM_PAYASYOUGO_PLAN_ID }}
+          NVM_AGENT_ID=${{ vars.NVM_AGENT_ID }}
 
-          # LLM Provider
+          # LLM Provider (secrets)
           GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
 
           # Test Configuration

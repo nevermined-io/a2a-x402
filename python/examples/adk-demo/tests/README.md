@@ -337,13 +337,18 @@ Two automated workflows are configured in `.github/workflows/`:
    - Comprehensive UI validation (~20-30 min)
    - Uploads screenshots as artifacts
 
-**Required Secrets** (configure in repository settings):
+**Required Configuration** (in repository settings):
+
+*Secrets* (sensitive):
 - `NVM_API_KEY_SERVER` - Merchant API key
 - `NVM_API_KEY_CLIENT` - Client API key
-- `NVM_ENVIRONMENT` - Environment (sandbox/production)
-- `NVM_CREDITS_PLAN_ID` - Payment plan ID
-- `NVM_AGENT_ID` - Agent ID
 - `GOOGLE_API_KEY` - Google AI API key
+
+*Variables* (non-sensitive):
+- `NVM_ENVIRONMENT` - Environment (sandbox/staging/production)
+- `NVM_CREDITS_PLAN_ID` - Credits-based payment plan ID
+- `NVM_PAYASYOUGO_PLAN_ID` - Pay-as-you-go plan ID (optional)
+- `NVM_AGENT_ID` - Agent ID for x402 payments
 
 See `.github/workflows/README.md` for detailed documentation.
 

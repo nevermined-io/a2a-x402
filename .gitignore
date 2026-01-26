@@ -16,3 +16,9 @@ __pycache__/
 
 # Claude Code files
 claude.md
+
+# Test artifacts
+tests/screenshots/
+tests/logs/
+.pytest_cache/
+*.log

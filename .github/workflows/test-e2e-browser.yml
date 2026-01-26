@@ -7,12 +7,6 @@ on:
       - 'python/examples/adk-demo/**'
       - 'python/x402_a2a/**'
       - '.github/workflows/test-e2e-browser.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'python/examples/adk-demo/**'
-      - 'python/x402_a2a/**'
-      - '.github/workflows/test-e2e-browser.yml'
   workflow_dispatch: # Allow manual trigger
   schedule:
     # Run daily at 2 AM UTC (optional - for regular validation)
@@ -23,6 +17,21 @@ jobs:
     name: Run Browser UI Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
+    env:
+      # Nevermined Authentication
+      NVM_API_KEY_SERVER: ${{ secrets.NVM_API_KEY_SERVER }}
+      NVM_API_KEY_CLIENT: ${{ secrets.NVM_API_KEY_CLIENT }}
+      # Nevermined Configuration
+      NVM_ENVIRONMENT: ${{ secrets.NVM_ENVIRONMENT }}
+      NVM_CREDITS_PLAN_ID: ${{ secrets.NVM_CREDITS_PLAN_ID }}
+      NVM_PAYASYOUGO_PLAN_ID: ${{ secrets.NVM_PAYASYOUGO_PLAN_ID }}
+      NVM_AGENT_ID: ${{ secrets.NVM_AGENT_ID }}
+      # LLM Provider
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      # Test Configuration
+      TEST_TIMEOUT: 60
+      TEST_BROWSER_HEADLESS: true
 
     defaults:
       run:
@@ -51,28 +60,6 @@ jobs:
         run: |
           uv run python -m playwright install --with-deps chromium
 
-      - name: Set up test environment
-        run: |
-          # Create .env.test from secrets and variables
-          cat > tests/.env.test << EOF
-          # Nevermined Authentication (secrets)
-          NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}
-          NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}
-
-          # Nevermined Configuration (variables)
-          NVM_ENVIRONMENT=${{ vars.NVM_ENVIRONMENT || 'sandbox' }}
-          NVM_CREDITS_PLAN_ID=${{ vars.NVM_CREDITS_PLAN_ID }}
-          NVM_PAYASYOUGO_PLAN_ID=${{ vars.NVM_PAYASYOUGO_PLAN_ID }}
-          NVM_AGENT_ID=${{ vars.NVM_AGENT_ID }}
-
-          # LLM Provider (secrets)
-          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
-
-          # Test Configuration
-          TEST_TIMEOUT=60
-          TEST_BROWSER_HEADLESS=true
-          EOF
-
       - name: Create test directories
         run: |
           mkdir -p tests/logs tests/screenshots
@@ -80,9 +67,6 @@ jobs:
       - name: Run Browser E2E Tests
         run: |
           uv run pytest tests/test_e2e_browser.py -v --tb=short --timeout=180 --junit-xml=test-results-browser.xml
-        env:
-          # Ensure tests use .env.test
-          PYTEST_CURRENT_TEST: "true"
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

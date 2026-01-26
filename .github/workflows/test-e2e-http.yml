@@ -56,6 +56,22 @@ jobs:
         run: |
           mkdir -p tests/logs tests/screenshots
 
+      - name: Verify secrets are set
+        run: |
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "ERROR: OPENAI_API_KEY secret is not set or is empty!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NVM_API_KEY_SERVER }}" ]; then
+            echo "ERROR: NVM_API_KEY_SERVER secret is not set or is empty!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NVM_API_KEY_CLIENT }}" ]; then
+            echo "ERROR: NVM_API_KEY_CLIENT secret is not set or is empty!"
+            exit 1
+          fi
+          echo "All required secrets are set!"
+
       - name: Create .env file for tests
         run: |
           echo "NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}" > .env

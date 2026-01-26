@@ -28,6 +28,14 @@ project_root = Path(__file__).parent.parent
 dotenv_path = project_root / ".env"
 print(f"DEBUG: Loading .env from: {dotenv_path}")
 print(f"DEBUG: .env file exists: {dotenv_path.exists()}")
+if dotenv_path.exists():
+    with open(dotenv_path, 'r') as f:
+        content = f.read()
+        print(f"DEBUG: .env file content ({len(content)} bytes):")
+        # Print each line to see what's in there
+        for i, line in enumerate(content.split('\n'), 1):
+            if 'OPENAI_API_KEY' in line:
+                print(f"DEBUG: Line {i}: {line[:30]}... (length: {len(line)})")
 load_dotenv(dotenv_path=dotenv_path)
 print(f"DEBUG: After load_dotenv, OPENAI_API_KEY in os.environ: {'OPENAI_API_KEY' in os.environ}")
 print(f"DEBUG: OPENAI_API_KEY value length: {len(os.getenv('OPENAI_API_KEY', ''))}")

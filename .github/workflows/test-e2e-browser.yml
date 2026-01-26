@@ -66,6 +66,22 @@ jobs:
         run: |
           mkdir -p tests/logs tests/screenshots
 
+      - name: Create .env file for tests
+        run: |
+          cat > .env << EOF
+          NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}
+          NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}
+          NVM_ENVIRONMENT=staging_sandbox
+          NVM_CREDITS_PLAN_ID=108049205517037458937731288202562272535839301659429499119214601955897885058399
+          NVM_PAYASYOUGO_PLAN_ID=62394875242609859677277111792165973450905709107028029787650786307704351020504
+          NVM_AGENT_ID=2494368510178916230703135426153690490133277298381571617383167590258071002716
+          LLM_PROVIDER=openai
+          LLM_MODEL=gpt-4o
+          OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          TEST_TIMEOUT=60
+          TEST_BROWSER_HEADLESS=true
+          EOF
+
       - name: Run Browser E2E Tests
         run: |
           uv run pytest tests/test_e2e_browser.py -v --tb=short --timeout=180 --junit-xml=test-results-browser.xml

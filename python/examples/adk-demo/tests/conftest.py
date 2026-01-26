@@ -12,8 +12,13 @@ import os
 from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
 
 from .process_manager import AgentProcessManager
+
+# Load .env file before running tests
+dotenv_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=dotenv_path, override=True)
 
 
 # Configure pytest-asyncio

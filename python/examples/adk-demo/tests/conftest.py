@@ -18,7 +18,17 @@ from .process_manager import AgentProcessManager
 
 # Load .env file before running tests
 dotenv_path = Path(__file__).parent.parent / ".env"
+print(f"[CONFTEST] Loading .env from: {dotenv_path}")
+print(f"[CONFTEST] .env file exists: {dotenv_path.exists()}")
+if dotenv_path.exists():
+    print(f"[CONFTEST] .env file size: {dotenv_path.stat().st_size} bytes")
 load_dotenv(dotenv_path=dotenv_path, override=True)
+print(f"[CONFTEST] After load_dotenv:")
+print(f"[CONFTEST]   NVM_API_KEY_CLIENT is set: {'NVM_API_KEY_CLIENT' in os.environ}")
+print(f"[CONFTEST]   NVM_API_KEY_SERVER is set: {'NVM_API_KEY_SERVER' in os.environ}")
+print(f"[CONFTEST]   OPENAI_API_KEY is set: {'OPENAI_API_KEY' in os.environ}")
+if 'NVM_API_KEY_CLIENT' in os.environ:
+    print(f"[CONFTEST]   NVM_API_KEY_CLIENT length: {len(os.getenv('NVM_API_KEY_CLIENT', ''))}")
 
 
 # Configure pytest-asyncio

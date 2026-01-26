@@ -71,6 +71,8 @@ jobs:
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "Created .env file with $(wc -l < .env) lines"
           echo "Verifying .env file size: $(wc -c < .env) bytes"
+          echo "Checking line lengths:"
+          awk '{print NR": length="length($0)}' .env
 
       - name: Run HTTP E2E Tests
         run: |

@@ -171,7 +171,12 @@ class AgentProcessManager:
             dict: Environment variables
         """
         env = os.environ.copy()
-
+        
+        # Debug: Check what env vars we have before loading .env.test
+        print(f"DEBUG: OPENAI_API_KEY in os.environ: {'OPENAI_API_KEY' in os.environ}")
+        print(f"DEBUG: LLM_PROVIDER in os.environ: {os.environ.get('LLM_PROVIDER', 'NOT SET')}")
+        print(f"DEBUG: Total env vars: {len(env)}")
+        
         # Load .env.test if it exists
         env_test_path = self.base_dir / "tests" / ".env.test"
         if env_test_path.exists():

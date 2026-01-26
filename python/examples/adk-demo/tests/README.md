@@ -323,33 +323,38 @@ async def my_helper_method(self, param: str) -> dict:
 
 ## CI/CD Integration
 
-### GitHub Actions Example
+### GitHub Actions Workflows
 
-```yaml
-name: E2E Tests
+Two automated workflows are configured in `.github/workflows/`:
 
-on: [push, pull_request]
+1. **HTTP Tests** (`test-e2e-http.yml`):
+   - Runs on push to main/feat/test branches
+   - Fast protocol-level testing (~5-10 min)
+   - Suitable for continuous integration
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v1
+2. **Browser Tests** (`test-e2e-browser.yml`):
+   - Runs on PRs and scheduled daily
+   - Comprehensive UI validation (~20-30 min)
+   - Uploads screenshots as artifacts
 
-      - name: Setup test environment
-        run: |
-          cp python/examples/adk-demo/.env.sample python/examples/adk-demo/tests/.env.test
-          # Configure with secrets
-          echo "NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}" >> python/examples/adk-demo/tests/.env.test
+**Required Secrets** (configure in repository settings):
+- `NVM_API_KEY_SERVER` - Merchant API key
+- `NVM_API_KEY_CLIENT` - Client API key
+- `NVM_ENVIRONMENT` - Environment (sandbox/production)
+- `NVM_CREDITS_PLAN_ID` - Payment plan ID
+- `NVM_AGENT_ID` - Agent ID
+- `GOOGLE_API_KEY` - Google AI API key
 
-      - name: Install dependencies
-        run: uv sync --directory=python/examples/adk-demo --group test
+See `.github/workflows/README.md` for detailed documentation.
 
-      - name: Run HTTP tests
-        run: |
-          cd python/examples/adk-demo
-          uv run pytest tests/test_e2e_http.py -v
+### Manual Workflow Trigger
+
+```bash
+# Run HTTP tests
+gh workflow run test-e2e-http.yml --ref main
+
+# Run browser tests
+gh workflow run test-e2e-browser.yml --ref feat/my-feature
 ```
 
 ## Future Enhancements

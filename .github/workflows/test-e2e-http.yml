@@ -1,0 +1,91 @@
+name: E2E HTTP Tests
+
+on:
+  push:
+    branches: [main, feat/*, test/*]
+    paths:
+      - 'python/examples/adk-demo/**'
+      - 'python/x402_a2a/**'
+      - '.github/workflows/test-e2e-http.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'python/examples/adk-demo/**'
+      - 'python/x402_a2a/**'
+      - '.github/workflows/test-e2e-http.yml'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test-http:
+    name: Run HTTP/A2A Protocol Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: python/examples/adk-demo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "python/examples/adk-demo/uv.lock"
+
+      - name: Install dependencies
+        run: |
+          uv sync --group test
+
+      - name: Set up test environment
+        run: |
+          # Create .env.test from secrets
+          cat > tests/.env.test << EOF
+          # Nevermined Authentication
+          NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}
+          NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}
+          NVM_ENVIRONMENT=${{ secrets.NVM_ENVIRONMENT || 'sandbox' }}
+
+          # Agent Configuration
+          NVM_CREDITS_PLAN_ID=${{ secrets.NVM_CREDITS_PLAN_ID }}
+          NVM_PAYASYOUGO_PLAN_ID=${{ secrets.NVM_PAYASYOUGO_PLAN_ID }}
+          NVM_AGENT_ID=${{ secrets.NVM_AGENT_ID }}
+
+          # LLM Provider
+          GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+          EOF
+
+      - name: Create test directories
+        run: |
+          mkdir -p tests/logs tests/screenshots
+
+      - name: Run HTTP E2E Tests
+        run: |
+          uv run pytest tests/test_e2e_http.py -v --tb=short --junit-xml=test-results-http.xml
+        env:
+          # Ensure tests use .env.test
+          PYTEST_CURRENT_TEST: "true"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: http-test-results
+          path: |
+            python/examples/adk-demo/test-results-http.xml
+            python/examples/adk-demo/tests/logs/
+          retention-days: 7
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: python/examples/adk-demo/test-results-http.xml
+          check_name: HTTP Test Results

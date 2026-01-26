@@ -61,4 +61,5 @@ test = [
     "pytest-timeout>=2.2.0",
     "pytest-rerunfailures>=14.0",
     "python-dotenv>=1.0.0",
+    "playwright>=1.48.0",
 ]

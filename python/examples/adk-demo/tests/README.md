@@ -30,13 +30,35 @@ vim tests/.env.test
 ```bash
 # Install all dependencies including test group
 uv sync --group test
+
+# Install Playwright browsers (required for browser tests)
+uv run playwright install chromium
 ```
 
-### 3. Run Tests
+### 3. Discover UI Selectors (Required for Browser Tests)
+
+```bash
+# Start agents in separate terminals:
+# Terminal 1: uv run server --port=10000
+# Terminal 2: uv run adk web --port=8000
+
+# Then run selector discovery:
+uv run python tests/discover_selectors.py
+
+# Check output and update SELECTORS in tests/test_e2e_browser.py
+```
+
+### 4. Run Tests
 
 ```bash
 # Run all HTTP tests (recommended for CI/CD)
 uv run pytest tests/test_e2e_http.py -v
+
+# Run browser tests (requires UI selectors to be discovered first)
+uv run pytest tests/test_e2e_browser.py -v
+
+# Run all tests (HTTP + browser)
+uv run pytest tests/ -v
 
 # Run specific test
 uv run pytest tests/test_e2e_http.py::TestE2EPaymentFlowHTTP::test_happy_path_payment_flow -v -s
@@ -44,8 +66,11 @@ uv run pytest tests/test_e2e_http.py::TestE2EPaymentFlowHTTP::test_happy_path_pa
 # Run with detailed output
 uv run pytest tests/ -v -s
 
-# Run only fast tests (exclude slow browser tests when implemented)
+# Run only fast tests (exclude slow browser tests)
 uv run pytest tests/ -m "not slow" -v
+
+# Run only browser tests
+uv run pytest tests/ -m browser -v
 ```
 
 ## Test Structure
@@ -56,7 +81,10 @@ tests/
 ├── conftest.py                 # Pytest fixtures and configuration
 ├── process_manager.py          # Agent process start/stop utilities
 ├── http_test_helper.py         # HTTP/A2A protocol helpers
+├── browser_helper.py           # Browser automation helper (Playwright)
 ├── test_e2e_http.py            # HTTP-based E2E tests
+├── test_e2e_browser.py         # Browser-based E2E tests
+├── discover_selectors.py       # UI selector discovery tool
 ├── .env.test                   # Test environment configuration (not in git)
 ├── screenshots/                # Browser test screenshots (not in git)
 ├── logs/                       # Process logs (not in git)
@@ -93,6 +121,49 @@ Edge case and error handling:
 ✅ Credits deducted from balance
 ✅ Concurrent request handling
 ✅ Error handling for edge cases
+
+## Browser Tests (test_e2e_browser.py)
+
+### Test Classes
+
+#### `TestE2EPaymentFlowBrowser`
+Complete payment flow through web UI:
+- `test_happy_path_browser_flow()` - Full purchase flow via browser
+- `test_browser_timeout_no_response()` - Timeout behavior
+- `test_browser_invalid_plan_selection()` - Invalid plan choices
+- `test_browser_multiple_purchases()` - Multiple consecutive purchases
+
+#### `TestBrowserUIElements`
+UI validation and accessibility:
+- `test_ui_elements_exist()` - Verify all UI elements present
+- `test_page_accessibility()` - Check ARIA roles and accessibility
+
+### What Browser Tests Validate
+
+✅ UI loads correctly in browser
+✅ Message input field functional
+✅ Send button clickable
+✅ Purchase message displays
+✅ Payment options appear in UI
+✅ Plan selection works
+✅ Transaction hash visible
+✅ UI handles timeouts gracefully
+✅ Invalid selections show errors
+✅ Multiple purchases work sequentially
+
+### Important Notes
+
+**UI Selector Discovery Required**: Browser tests require discovering CSS selectors first:
+1. Start agents: `uv run server --port=10000` and `uv run adk web --port=8000`
+2. Run: `uv run python tests/discover_selectors.py`
+3. Update `SELECTORS` dict in `test_e2e_browser.py` with discovered values
+
+**Playwright Installation**: Browser tests require Playwright browsers:
+```bash
+uv run playwright install chromium
+```
+
+**AppArmor Configuration**: Browser launches with `--no-sandbox` flags due to Ubuntu AppArmor restrictions (per CLAUDE.md). This is normal and expected.
 
 ## Environment Configuration
 

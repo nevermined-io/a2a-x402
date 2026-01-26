@@ -56,6 +56,11 @@ jobs:
         run: |
           mkdir -p tests/logs tests/screenshots
 
+      - name: Verify environment variables
+        run: |
+          echo "Checking environment variables..."
+          env | grep -E "NVM_|OPENAI_|LLM_" || echo "No matching env vars found"
+
       - name: Run HTTP E2E Tests
         run: |
           uv run pytest tests/test_e2e_http.py -v --tb=short --junit-xml=test-results-http.xml

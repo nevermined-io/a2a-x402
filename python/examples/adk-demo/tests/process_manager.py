@@ -57,8 +57,10 @@ class AgentProcessManager:
         test_env = self._get_test_env()
         
         # Debug: Check if OPENAI_API_KEY is set
-        openai_key_set = "OPENAI_API_KEY" in test_env and test_env["OPENAI_API_KEY"]
-        print(f"DEBUG: OPENAI_API_KEY is {'set' if openai_key_set else 'NOT SET'} in test environment")
+        openai_in_env = "OPENAI_API_KEY" in test_env
+        openai_value = test_env.get("OPENAI_API_KEY", "NOT_IN_DICT")
+        print(f"DEBUG: OPENAI_API_KEY in test_env dict: {openai_in_env}")
+        print(f"DEBUG: OPENAI_API_KEY value: '{openai_value[:10] if openai_value != 'NOT_IN_DICT' else openai_value}...'")
         
         # Start process
         self.merchant_process = subprocess.Popen(
@@ -170,11 +172,16 @@ class AgentProcessManager:
         Returns:
             dict: Environment variables
         """
+        # Debug: Check what env vars we have BEFORE copy
+        print(f"DEBUG: OPENAI_API_KEY in os.environ: {'OPENAI_API_KEY' in os.environ}")
+        print(f"DEBUG: OPENAI_API_KEY value type: {type(os.environ.get('OPENAI_API_KEY'))}")
+        print(f"DEBUG: OPENAI_API_KEY value length: {len(os.environ.get('OPENAI_API_KEY', ''))}")
+        
         env = os.environ.copy()
         
-        # Debug: Check what env vars we have before loading .env.test
-        print(f"DEBUG: OPENAI_API_KEY in os.environ: {'OPENAI_API_KEY' in os.environ}")
-        print(f"DEBUG: LLM_PROVIDER in os.environ: {os.environ.get('LLM_PROVIDER', 'NOT SET')}")
+        # Debug: Check what env vars we have AFTER copy
+        print(f"DEBUG: OPENAI_API_KEY in copied env: {'OPENAI_API_KEY' in env}")
+        print(f"DEBUG: LLM_PROVIDER in copied env: {'LLM_PROVIDER' in env}")
         print(f"DEBUG: Total env vars: {len(env)}")
         
         # Load .env.test if it exists

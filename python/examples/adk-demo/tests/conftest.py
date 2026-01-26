@@ -105,34 +105,35 @@ def setup_test_dirs(test_config):
 @pytest.fixture
 def test_env_vars():
     """
-    Provide test environment variables loaded from .env.test.
+    Provide test environment variables from os.environ or .env.test file.
+
+    First tries to load from .env.test (for local testing), then falls back
+    to os.environ (for CI/CD workflows with environment variables set).
 
     Returns:
         dict: Environment variables for tests
     """
     env_test_path = Path(__file__).parent / ".env.test"
 
-    if not env_test_path.exists():
-        pytest.skip(
-            f"Test environment file not found: {env_test_path}\n"
-            "Please copy your .env to tests/.env.test and configure test credentials."
-        )
+    # Try loading from .env.test file first (local development)
+    if env_test_path.exists():
+        try:
+            from dotenv import dotenv_values
 
-    # Load environment variables
-    try:
-        from dotenv import dotenv_values
+            return dotenv_values(env_test_path)
+        except ImportError:
+            # Fallback: simple parsing
+            env_vars = {}
+            with open(env_test_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, value = line.split("=", 1)
+                        env_vars[key.strip()] = value.strip()
+            return env_vars
 
-        return dotenv_values(env_test_path)
-    except ImportError:
-        # Fallback: simple parsing
-        env_vars = {}
-        with open(env_test_path) as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    key, value = line.split("=", 1)
-                    env_vars[key.strip()] = value.strip()
-        return env_vars
+    # Fallback to os.environ (CI/CD workflows)
+    return dict(os.environ)
 
 
 # Pytest configuration hooks

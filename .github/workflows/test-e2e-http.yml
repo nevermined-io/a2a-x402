@@ -69,6 +69,9 @@ jobs:
           LLM_MODEL=gpt-4o
           OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           EOF
+          echo "Created .env file with $(wc -l < .env) lines"
+          ls -la .env
+          echo "OPENAI_API_KEY is set in .env: $(grep -c OPENAI_API_KEY .env || echo 0)"
 
       - name: Run HTTP E2E Tests
         run: |

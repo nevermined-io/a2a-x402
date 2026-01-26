@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
+from pathlib import Path
 
 import click
 import uvicorn
@@ -21,7 +23,10 @@ from starlette.applications import Starlette
 # Local imports
 from server.agents.routes import create_agent_routes
 
-load_dotenv()
+# Load .env file from project root (go up from server/ directory)
+project_root = Path(__file__).parent.parent
+dotenv_path = project_root / ".env"
+load_dotenv(dotenv_path=dotenv_path)
 
 logging.basicConfig(level=logging.INFO)
 

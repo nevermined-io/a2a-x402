@@ -7,6 +7,12 @@ on:
       - 'python/examples/adk-demo/**'
       - 'python/x402_a2a/**'
       - '.github/workflows/test-e2e-http.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'python/examples/adk-demo/**'
+      - 'python/x402_a2a/**'
+      - '.github/workflows/test-e2e-http.yml'
   workflow_dispatch: # Allow manual trigger
 
 jobs:

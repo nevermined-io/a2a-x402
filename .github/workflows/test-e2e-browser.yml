@@ -7,6 +7,12 @@ on:
       - 'python/examples/adk-demo/**'
       - 'python/x402_a2a/**'
       - '.github/workflows/test-e2e-browser.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'python/examples/adk-demo/**'
+      - 'python/x402_a2a/**'
+      - '.github/workflows/test-e2e-browser.yml'
   workflow_dispatch: # Allow manual trigger
   schedule:
     # Run daily at 2 AM UTC (optional - for regular validation)

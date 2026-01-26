@@ -26,16 +26,7 @@ from server.agents.routes import create_agent_routes
 # Load .env file from project root (go up from server/ directory)
 project_root = Path(__file__).parent.parent
 dotenv_path = project_root / ".env"
-print(f"[SERVER] DEBUG: Loading .env from: {dotenv_path}")
-print(f"[SERVER] DEBUG: .env file exists: {dotenv_path.exists()}")
-print(f"[SERVER] DEBUG: Current working directory: {os.getcwd()}")
-print(f"[SERVER] DEBUG: Project root: {project_root}")
-if dotenv_path.exists():
-    print(f"[SERVER] DEBUG: .env file size: {dotenv_path.stat().st_size} bytes")
-load_dotenv(dotenv_path=dotenv_path)
-print(f"[SERVER] DEBUG: After load_dotenv, OPENAI_API_KEY is set: {'OPENAI_API_KEY' in os.environ}")
-if 'OPENAI_API_KEY' in os.environ:
-    print(f"[SERVER] DEBUG: OPENAI_API_KEY length: {len(os.getenv('OPENAI_API_KEY', ''))}")
+load_dotenv(dotenv_path=dotenv_path, override=True)
 
 logging.basicConfig(level=logging.INFO)
 

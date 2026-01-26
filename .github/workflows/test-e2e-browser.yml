@@ -19,15 +19,15 @@ jobs:
     timeout-minutes: 30
 
     env:
-      # Nevermined Authentication
+      # Nevermined Authentication (from secrets)
       NVM_API_KEY_SERVER: ${{ secrets.NVM_API_KEY_SERVER }}
       NVM_API_KEY_CLIENT: ${{ secrets.NVM_API_KEY_CLIENT }}
-      # Nevermined Configuration
-      NVM_ENVIRONMENT: ${{ secrets.NVM_ENVIRONMENT }}
-      NVM_CREDITS_PLAN_ID: ${{ secrets.NVM_CREDITS_PLAN_ID }}
-      NVM_PAYASYOUGO_PLAN_ID: ${{ secrets.NVM_PAYASYOUGO_PLAN_ID }}
-      NVM_AGENT_ID: ${{ secrets.NVM_AGENT_ID }}
-      # LLM Provider
+      # Nevermined Configuration (hardcoded - not sensitive)
+      NVM_ENVIRONMENT: staging_sandbox
+      NVM_CREDITS_PLAN_ID: 108049205517037458937731288202562272535839301659429499119214601955897885058399
+      NVM_PAYASYOUGO_PLAN_ID: 62394875242609859677277111792165973450905709107028029787650786307704351020504
+      NVM_AGENT_ID: 2494368510178916230703135426153690490133277298381571617383167590258071002716
+      # LLM Provider (from secrets)
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       # Test Configuration
       TEST_TIMEOUT: 60

@@ -19,8 +19,8 @@ import asyncio
 import sys
 from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add tests directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
 from browser_helper import BrowserTestHelper
 
@@ -122,19 +122,30 @@ async def discover_selectors():
                 found_selectors["message_input"] = selector
                 break
 
-        # Try to identify send button
-        button_selectors = [
-            "button[type='submit']",
-            "button:contains('Send')",
-            "[role='button']:contains('Send')",
-            "button",
-        ]
+        # Try to identify send button - get all buttons and check their attributes
+        button_exists = await helper.check_element_exists("button")
+        if button_exists:
+            # Get button details using JavaScript
+            from playwright.async_api import async_playwright
+            script = """
+            Array.from(document.querySelectorAll('button')).map((btn, idx) => ({
+                index: idx,
+                text: btn.innerText,
+                ariaLabel: btn.getAttribute('aria-label'),
+                class: btn.className,
+                id: btn.id
+            }))
+            """
+            button_info = await helper.page.evaluate(script)
+            print(f"📤 Buttons found: {len(button_info)}")
+            for btn in button_info:
+                print(f"   Button {btn['index']}: text='{btn['text']}', aria-label='{btn['ariaLabel']}', class='{btn['class']}', id='{btn['id']}'")
 
-        for selector in button_selectors:
-            if await helper.check_element_exists(selector):
-                print(f"📤 Send Button: {selector}")
-                found_selectors["send_button"] = selector
-                break
+            # Common send button selector
+            found_selectors["send_button"] = "button"
+            print(f"📤 Send Button: button (check button details above)")
+        else:
+            print("📤 Send Button: Not found")
 
         # Try to identify message container
         container_selectors = [
@@ -143,6 +154,9 @@ async def discover_selectors():
             ".messages",
             ".chat",
             "#messages",
+            "main",
+            "[class*='chat']",
+            "[class*='message']",
         ]
 
         for selector in container_selectors:
@@ -150,6 +164,19 @@ async def discover_selectors():
                 print(f"💬 Message Container: {selector}")
                 found_selectors["message_container"] = selector
                 break
+
+        # Get all divs with classes to understand structure
+        script_divs = """
+        Array.from(document.querySelectorAll('div[class]')).slice(0, 10).map((div, idx) => ({
+            index: idx,
+            class: div.className,
+            id: div.id
+        }))
+        """
+        div_info = await helper.page.evaluate(script_divs)
+        print(f"\n📦 First 10 divs with classes:")
+        for div in div_info:
+            print(f"   Div {div['index']}: class='{div['class']}', id='{div['id']}'")
 
         print()
         print("=" * 60)

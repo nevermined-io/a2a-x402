@@ -22,3 +22,6 @@ tests/screenshots/
 tests/logs/
 .pytest_cache/
 *.log
+
+# Temporary files
+tmp/

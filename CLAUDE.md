@@ -156,7 +156,7 @@ When building agents with x402 payments:
 
 ## Repository and Branch Strategy
 
-Make all the changes in this repository: https://github.com/nevermined-io/a2a-x402
+Make all the changes (commits and PRs) in this repository: https://github.com/nevermined-io/a2a-x402
 
 - **Main branch**: `main`
 - Always sync feature branches with `main` before creating PRs

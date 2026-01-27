@@ -158,7 +158,14 @@ def test_env_vars():
             return env_vars
 
     # Fallback to os.environ (CI/CD workflows)
-    return dict(os.environ)
+    env_vars = dict(os.environ)
+    print(f"[test_env_vars] Returning environment variables from os.environ")
+    print(f"[test_env_vars]   NVM_API_KEY_CLIENT in env_vars: {'NVM_API_KEY_CLIENT' in env_vars}")
+    print(f"[test_env_vars]   NVM_API_KEY_SERVER in env_vars: {'NVM_API_KEY_SERVER' in env_vars}")
+    if 'NVM_API_KEY_CLIENT' in env_vars:
+        print(f"[test_env_vars]   NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
+        print(f"[test_env_vars]   NVM_API_KEY_CLIENT first 50 chars: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
+    return env_vars
 
 
 # Pytest configuration hooks

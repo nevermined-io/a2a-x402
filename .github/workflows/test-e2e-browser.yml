@@ -67,7 +67,6 @@ jobs:
 
       - name: Create .env file for tests
         run: |
-          pwd
           echo "NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}" > .env
           echo "NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}" >> .env
           echo "NVM_ENVIRONMENT=staging_sandbox" >> .env
@@ -79,11 +78,6 @@ jobs:
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "TEST_TIMEOUT=60" >> .env
           echo "TEST_BROWSER_HEADLESS=true" >> .env
-          echo "Created .env file at $(pwd)/.env"
-          echo "File size: $(wc -c < .env) bytes"
-          ls -la .env
-          echo "First line of .env:"
-          head -1 .env | cut -c1-50
 
       - name: Run Browser E2E Tests
         run: |

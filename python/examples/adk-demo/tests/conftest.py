@@ -18,11 +18,7 @@ from .process_manager import AgentProcessManager
 
 # Load .env file before running tests
 dotenv_path = Path(__file__).parent.parent / ".env"
-print(f"[CONFTEST] Loading .env from: {dotenv_path}")
-print(f"[CONFTEST] .env file exists: {dotenv_path.exists()}")
-print(f"[CONFTEST] Current os.environ NVM_API_KEY_CLIENT (BEFORE loading): {len(os.getenv('NVM_API_KEY_CLIENT', ''))} chars")
 if dotenv_path.exists():
-    print(f"[CONFTEST] .env file size: {dotenv_path.stat().st_size} bytes")
     # Manually read and set environment variables to ensure they're actually set
     with open(dotenv_path, 'r') as f:
         for line in f:
@@ -30,16 +26,8 @@ if dotenv_path.exists():
             if line and not line.startswith('#') and '=' in line:
                 key, value = line.split('=', 1)
                 os.environ[key] = value
-                if key in ['NVM_API_KEY_CLIENT', 'NVM_API_KEY_SERVER', 'OPENAI_API_KEY']:
-                    print(f"[CONFTEST] Set {key} (length: {len(value)})")
 else:
     load_dotenv(dotenv_path=dotenv_path, override=True)
-print(f"[CONFTEST] After loading:")
-print(f"[CONFTEST]   NVM_API_KEY_CLIENT is set: {'NVM_API_KEY_CLIENT' in os.environ}")
-print(f"[CONFTEST]   NVM_API_KEY_SERVER is set: {'NVM_API_KEY_SERVER' in os.environ}")
-print(f"[CONFTEST]   OPENAI_API_KEY is set: {'OPENAI_API_KEY' in os.environ}")
-if 'NVM_API_KEY_CLIENT' in os.environ:
-    print(f"[CONFTEST]   NVM_API_KEY_CLIENT length: {len(os.getenv('NVM_API_KEY_CLIENT', ''))}")
 
 
 # Configure pytest-asyncio
@@ -133,8 +121,11 @@ def test_env_vars():
     """
     Provide test environment variables from os.environ or .env.test file.
 
-    First tries to load from .env.test (for local testing), then falls back
-    to os.environ (for CI/CD workflows with environment variables set).
+    In CI/CD environments (detected via CI or GITHUB_ACTIONS environment variables),
+    prioritizes os.environ to use GitHub Secrets or other CI-provided variables.
+    
+    In local development, loads from .env.test file if it exists, allowing
+    developers to test without modifying their global environment.
 
     Returns:
         dict: Environment variables for tests
@@ -142,19 +133,12 @@ def test_env_vars():
     # In CI/CD environments, prioritize os.environ over .env.test
     # GitHub Actions sets CI=true, most CI systems set CI or CONTINUOUS_INTEGRATION
     if os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true":
-        print(f"[test_env_vars] CI environment detected, using os.environ")
-        env_vars = dict(os.environ)
-        print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT length: {len(os.environ.get('NVM_API_KEY_CLIENT', ''))}")
-        print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
-        print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT first 50: {os.environ.get('NVM_API_KEY_CLIENT', '')[:50]}")
-        print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT first 50: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
-        return env_vars
+        return dict(os.environ)
     
     env_test_path = Path(__file__).parent / ".env.test"
 
     # Try loading from .env.test file first (local development)
     if env_test_path.exists():
-        print(f"[test_env_vars] Loading from .env.test file for local development")
         try:
             from dotenv import dotenv_values
 
@@ -170,14 +154,8 @@ def test_env_vars():
                         env_vars[key.strip()] = value.strip()
             return env_vars
 
-    # Fallback to os.environ (CI/CD workflows)
-    print(f"[test_env_vars] No .env.test found, using os.environ")
-    env_vars = dict(os.environ)
-    print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT length: {len(os.environ.get('NVM_API_KEY_CLIENT', ''))}")
-    print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
-    print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT first 50: {os.environ.get('NVM_API_KEY_CLIENT', '')[:50]}")
-    print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT first 50: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
-    return env_vars
+    # Fallback to os.environ if no .env.test file
+    return dict(os.environ)
 
 
 # Pytest configuration hooks

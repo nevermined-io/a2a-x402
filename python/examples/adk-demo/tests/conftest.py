@@ -139,10 +139,22 @@ def test_env_vars():
     Returns:
         dict: Environment variables for tests
     """
+    # In CI/CD environments, prioritize os.environ over .env.test
+    # GitHub Actions sets CI=true, most CI systems set CI or CONTINUOUS_INTEGRATION
+    if os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true":
+        print(f"[test_env_vars] CI environment detected, using os.environ")
+        env_vars = dict(os.environ)
+        print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT length: {len(os.environ.get('NVM_API_KEY_CLIENT', ''))}")
+        print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
+        print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT first 50: {os.environ.get('NVM_API_KEY_CLIENT', '')[:50]}")
+        print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT first 50: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
+        return env_vars
+    
     env_test_path = Path(__file__).parent / ".env.test"
 
     # Try loading from .env.test file first (local development)
     if env_test_path.exists():
+        print(f"[test_env_vars] Loading from .env.test file for local development")
         try:
             from dotenv import dotenv_values
 
@@ -159,8 +171,8 @@ def test_env_vars():
             return env_vars
 
     # Fallback to os.environ (CI/CD workflows)
+    print(f"[test_env_vars] No .env.test found, using os.environ")
     env_vars = dict(os.environ)
-    print(f"[test_env_vars] Returning environment variables from os.environ")
     print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT length: {len(os.environ.get('NVM_API_KEY_CLIENT', ''))}")
     print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
     print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT first 50: {os.environ.get('NVM_API_KEY_CLIENT', '')[:50]}")

@@ -25,6 +25,15 @@ class TestE2EPaymentFlowHTTP:
         Initializes HTTP client and payments SDK.
         Requires merchant and client agents to be running (via fixtures).
         """
+        # Debug: print environment variables
+        print(f"[test_e2e_http setup] test_env_vars keys: {list(test_env_vars.keys())[:10]}")
+        print(f"[test_e2e_http setup] NVM_API_KEY_CLIENT in test_env_vars: {'NVM_API_KEY_CLIENT' in test_env_vars}")
+        if 'NVM_API_KEY_CLIENT' in test_env_vars:
+            api_key_client = test_env_vars["NVM_API_KEY_CLIENT"]
+            print(f"[test_e2e_http setup] NVM_API_KEY_CLIENT length: {len(api_key_client)}")
+            print(f"[test_e2e_http setup] NVM_API_KEY_CLIENT first 50 chars: {api_key_client[:50]}")
+            print(f"[test_e2e_http setup] NVM_API_KEY_CLIENT has dots: {'.' in api_key_client}")
+        
         # Initialize payments client for subscriber/customer
         self.payments_client = Payments(
             PaymentOptions(

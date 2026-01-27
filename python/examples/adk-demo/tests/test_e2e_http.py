@@ -67,6 +67,11 @@ class TestE2EPaymentFlowHTTP:
         response = await self.helper.send_purchase_request("laptop")
 
         # Step 2: Verify payment-required response
+        # Check if response contains an error (e.g., OpenAI API key issue)
+        if "error" in response:
+            error_msg = response.get("error", {}).get("message", "Unknown error")
+            raise RuntimeError(f"Merchant agent returned error: {error_msg}")
+        
         state = self.helper.get_task_state(response)
         if state != "input-required":
             # Print response for debugging CI failures

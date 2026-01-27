@@ -33,6 +33,10 @@ if dotenv_path.exists():
             line = line.strip()
             if line and not line.startswith('#') and '=' in line:
                 key, value = line.split('=', 1)
+                # Strip surrounding quotes (single or double) from values
+                if (value.startswith('"') and value.endswith('"')) or \
+                   (value.startswith("'") and value.endswith("'")):
+                    value = value[1:-1]
                 os.environ[key] = value
 else:
     load_dotenv(dotenv_path=dotenv_path, override=True)

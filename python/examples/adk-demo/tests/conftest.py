@@ -20,6 +20,7 @@ from .process_manager import AgentProcessManager
 dotenv_path = Path(__file__).parent.parent / ".env"
 print(f"[CONFTEST] Loading .env from: {dotenv_path}")
 print(f"[CONFTEST] .env file exists: {dotenv_path.exists()}")
+print(f"[CONFTEST] Current os.environ NVM_API_KEY_CLIENT (BEFORE loading): {len(os.getenv('NVM_API_KEY_CLIENT', ''))} chars")
 if dotenv_path.exists():
     print(f"[CONFTEST] .env file size: {dotenv_path.stat().st_size} bytes")
     # Manually read and set environment variables to ensure they're actually set
@@ -160,11 +161,10 @@ def test_env_vars():
     # Fallback to os.environ (CI/CD workflows)
     env_vars = dict(os.environ)
     print(f"[test_env_vars] Returning environment variables from os.environ")
-    print(f"[test_env_vars]   NVM_API_KEY_CLIENT in env_vars: {'NVM_API_KEY_CLIENT' in env_vars}")
-    print(f"[test_env_vars]   NVM_API_KEY_SERVER in env_vars: {'NVM_API_KEY_SERVER' in env_vars}")
-    if 'NVM_API_KEY_CLIENT' in env_vars:
-        print(f"[test_env_vars]   NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
-        print(f"[test_env_vars]   NVM_API_KEY_CLIENT first 50 chars: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
+    print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT length: {len(os.environ.get('NVM_API_KEY_CLIENT', ''))}")
+    print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT length: {len(env_vars.get('NVM_API_KEY_CLIENT', ''))}")
+    print(f"[test_env_vars]   os.environ NVM_API_KEY_CLIENT first 50: {os.environ.get('NVM_API_KEY_CLIENT', '')[:50]}")
+    print(f"[test_env_vars]   env_vars NVM_API_KEY_CLIENT first 50: {env_vars.get('NVM_API_KEY_CLIENT', '')[:50]}")
     return env_vars
 
 

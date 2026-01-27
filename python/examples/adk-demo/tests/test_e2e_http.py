@@ -68,6 +68,11 @@ class TestE2EPaymentFlowHTTP:
 
         # Step 2: Verify payment-required response
         state = self.helper.get_task_state(response)
+        if state != "input-required":
+            # Print response for debugging CI failures
+            import json
+            print(f"\nUnexpected state '{state}'. Full response:")
+            print(json.dumps(response, indent=2))
         assert state == "input-required", f"Expected input-required, got {state}"
 
         payment_status = self.helper.extract_payment_status(response)

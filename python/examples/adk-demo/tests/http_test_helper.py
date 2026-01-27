@@ -25,7 +25,8 @@ class HTTPTestHelper:
         """
         self.merchant_url = merchant_url
         self.payments = payments_client
-        self.client = httpx.AsyncClient(timeout=30)
+        # Increase timeout for CI environments where LLM calls may be slower
+        self.client = httpx.AsyncClient(timeout=90)
 
     async def send_purchase_request(
         self, product: str, task_id: Optional[str] = None

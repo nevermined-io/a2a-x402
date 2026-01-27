@@ -25,3 +25,5 @@ tests/logs/
 
 # Temporary files
 tmp/
+
+.vscode/

@@ -27,3 +27,5 @@ tests/logs/
 tmp/
 
 .vscode/
+
+python/examples/adk-demo/tests/screenshots/

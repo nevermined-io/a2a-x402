@@ -158,14 +158,21 @@ class AgentProcessManager:
         """
         Get environment variables for test processes.
 
-        Loads from .env.test file if it exists.
+        In CI/CD environments (detected via CI or GITHUB_ACTIONS environment variables),
+        uses os.environ directly to leverage GitHub Secrets or other CI-provided variables.
+        
+        In local development, loads from .env.test file if it exists.
 
         Returns:
             dict: Environment variables
         """
         env = os.environ.copy()
 
-        # Load .env.test if it exists
+        # In CI/CD environments, skip loading .env.test to use GitHub Secrets
+        if os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true":
+            return env
+
+        # Load .env.test if it exists (local development only)
         env_test_path = self.base_dir / "tests" / ".env.test"
         if env_test_path.exists():
             # Simple .env parser (or use python-dotenv)

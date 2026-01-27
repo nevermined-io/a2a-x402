@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
+from pathlib import Path
 
 import click
 import uvicorn
@@ -21,7 +23,23 @@ from starlette.applications import Starlette
 # Local imports
 from server.agents.routes import create_agent_routes
 
-load_dotenv()
+# Load .env file from project root (go up from server/ directory)
+project_root = Path(__file__).parent.parent
+dotenv_path = project_root / ".env"
+if dotenv_path.exists():
+    # Manually read and set environment variables to ensure they're actually set
+    with open(dotenv_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                # Strip surrounding quotes (single or double) from values
+                if (value.startswith('"') and value.endswith('"')) or \
+                   (value.startswith("'") and value.endswith("'")):
+                    value = value[1:-1]
+                os.environ[key] = value
+else:
+    load_dotenv(dotenv_path=dotenv_path, override=True)
 
 logging.basicConfig(level=logging.INFO)
 

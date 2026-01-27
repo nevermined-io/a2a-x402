@@ -16,3 +16,16 @@ __pycache__/
 
 # Claude Code files
 claude.md
+
+# Test artifacts
+tests/screenshots/
+tests/logs/
+.pytest_cache/
+*.log
+
+# Temporary files
+tmp/
+
+.vscode/
+
+python/examples/adk-demo/tests/screenshots/

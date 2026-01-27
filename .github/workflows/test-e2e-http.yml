@@ -1,0 +1,92 @@
+name: E2E HTTP Tests
+
+on:
+  push:
+    branches: [main, feat/*, test/*]
+    paths:
+      - 'python/examples/adk-demo/**'
+      - 'python/x402_a2a/**'
+      - '.github/workflows/test-e2e-http.yml'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  test-http:
+    name: Run HTTP/A2A Protocol Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: python/examples/adk-demo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "python/examples/adk-demo/uv.lock"
+
+      - name: Install dependencies
+        run: |
+          uv sync --group test
+
+      - name: Create test directories
+        run: |
+          mkdir -p tests/logs tests/screenshots
+
+      - name: Verify secrets are set
+        run: |
+          if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "ERROR: OPENAI_API_KEY secret is not set or is empty!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NVM_API_KEY_SERVER }}" ]; then
+            echo "ERROR: NVM_API_KEY_SERVER secret is not set or is empty!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.NVM_API_KEY_CLIENT }}" ]; then
+            echo "ERROR: NVM_API_KEY_CLIENT secret is not set or is empty!"
+            exit 1
+          fi
+          echo "All required secrets are set!"
+
+      - name: Create .env file for tests
+        run: |
+          echo "NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}" > .env
+          echo "NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}" >> .env
+          echo "NVM_ENVIRONMENT=staging_sandbox" >> .env
+          echo "NVM_CREDITS_PLAN_ID=108049205517037458937731288202562272535839301659429499119214601955897885058399" >> .env
+          echo "NVM_PAYASYOUGO_PLAN_ID=62394875242609859677277111792165973450905709107028029787650786307704351020504" >> .env
+          echo "NVM_AGENT_ID=2494368510178916230703135426153690490133277298381571617383167590258071002716" >> .env
+          echo "LLM_PROVIDER=openai" >> .env
+          echo "LLM_MODEL=gpt-4o" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+
+      - name: Run HTTP E2E Tests
+        run: |
+          uv run pytest tests/test_e2e_http.py -v --tb=short --junit-xml=test-results-http.xml
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: http-test-results
+          path: |
+            python/examples/adk-demo/test-results-http.xml
+            python/examples/adk-demo/tests/logs/
+          retention-days: 7
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: python/examples/adk-demo/test-results-http.xml
+          check_name: HTTP Test Results

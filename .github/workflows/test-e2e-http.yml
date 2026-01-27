@@ -60,6 +60,7 @@ jobs:
 
       - name: Create .env file for tests
         run: |
+          pwd
           echo "NVM_API_KEY_SERVER=${{ secrets.NVM_API_KEY_SERVER }}" > .env
           echo "NVM_API_KEY_CLIENT=${{ secrets.NVM_API_KEY_CLIENT }}" >> .env
           echo "NVM_ENVIRONMENT=staging_sandbox" >> .env
@@ -69,14 +70,15 @@ jobs:
           echo "LLM_PROVIDER=openai" >> .env
           echo "LLM_MODEL=gpt-4o" >> .env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-          echo "Created .env file with $(wc -l < .env) lines"
-          echo "Verifying .env file size: $(wc -c < .env) bytes"
-          echo "Checking line lengths:"
-          awk '{print NR": length="length($0)}' .env
+          echo "Created .env file at $(pwd)/.env"
+          echo "File size: $(wc -c < .env) bytes"
+          ls -la .env
+          echo "First line of .env:"
+          head -1 .env | cut -c1-50
 
       - name: Run HTTP E2E Tests
         run: |
-          uv run pytest tests/test_e2e_http.py -v --tb=short --junit-xml=test-results-http.xml
+          uv run pytest tests/test_e2e_http.py -s -v --tb=short --junit-xml=test-results-http.xml
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

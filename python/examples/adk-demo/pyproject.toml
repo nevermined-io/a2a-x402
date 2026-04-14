@@ -5,7 +5,7 @@ description = "ADK x402 Payment Protocol Demo using refactored x402_a2a package"
 requires-python = ">=3.13"
 dependencies = [
     "a2a-sdk",
-    "google-adk>=0.5.0",
+    "google-adk>=1.28.1",
     "x402",  # Installed from git via [tool.uv.sources]
     "click>=8.2.0",
     "eth-account>=0.13.7",
